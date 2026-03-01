@@ -16,10 +16,9 @@ package-lock.json
 yarn.lock
 
 # ─────────────────────────────────────────────
-#  React build output
+#  Frontend (plain HTML/JS/CSS — no build step)
 # ─────────────────────────────────────────────
-frontend/build/
-frontend/.env
+# No build output to ignore for static HTML
 
 # ─────────────────────────────────────────────
 #  Python
@@ -35,6 +34,8 @@ dist/
 build/
 .eggs/
 *.egg
+
+backend/node_modules/
 
 # ─────────────────────────────────────────────
 #  ML artifacts
