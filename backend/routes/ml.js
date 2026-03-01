@@ -6,6 +6,11 @@ const router = express.Router();
 
 const ML_URL = process.env.ML_SERVICE_URL || 'http://localhost:8000';
 
+
+router.get('/', async (req, res) => {
+  res.render("dashboard");
+}) 
+
 // POST /api/ml/predict  (protected)
 // Proxies the request to the Flask ML service and returns its JSON response.
 router.post('/predict', protect, async (req, res) => {

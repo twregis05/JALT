@@ -10,18 +10,10 @@ const signToken = (id) =>
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 
-// POST /api/auth/signup
-router.post('/signup', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const user = await User.create({ name, email, password });
-    const token = signToken(user._id);
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
+router.get('/', async (req, res) => {
+  res.render("login");
+}) 
+  
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
