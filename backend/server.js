@@ -36,5 +36,5 @@ app.use("/ml", ml);
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
 // ── Start ─────────────────────────────────────
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Web server is running at http://localhost:${PORT}`));
