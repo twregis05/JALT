@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JALT | Node Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/auth.css">
+</head>
+<body class="auth-body">
+
+    <div class="ambient-light blue-glow"></div>
+    <div class="ambient-light purple-glow"></div>
+
+    <div class="auth-container glass-panel">
+        <div class="brand-header">
+            <h1 class="neon-text">JALT Engine</h1>
+            <p class="subtitle">Secure terminal access required.</p>
+        </div>
+        
+        <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+            <div class="input-group">
+                <label for="loginEmail">Identification (Email)</label>
+                <input type="email" id="loginEmail" class="cyber-input" placeholder="sysadmin@jalt.io" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="loginPassword">Passcode</label>
+                <input type="password" id="loginPassword" class="cyber-input" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-glow" style="margin-bottom: 15px;">
+                Initialize Terminal
+            </button>
+            
+            <button type="button" class="btn btn-secondary btn-glow" onclick="window.location.href='register.html'">
+                Create Authorization (Register)
+            </button>
+        </form>
+
+        <div id="auth-error" class="error-msg" style="display: none;"></div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>
