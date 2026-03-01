@@ -4,6 +4,7 @@
 .env
 .env.local
 .env.*.local
+ml_service/.env.api
 
 # ─────────────────────────────────────────────
 #  Node / npm

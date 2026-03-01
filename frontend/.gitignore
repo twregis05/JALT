@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+ml_service/.env.api
+
+
+
 
 # Editor directories and files
 .vscode/*
