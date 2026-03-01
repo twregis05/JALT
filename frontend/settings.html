@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JALT | System Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/auth.css">
+    <link rel="stylesheet" href="styles/settings.css">
+</head>
+<body class="auth-body">
+    <div class="ambient-light blue-glow"></div>
+    
+    <div class="terminal-card glass-panel settings-card">
+        <div class="settings-header">
+            <h2 class="neon-text">System Settings</h2>
+            <div class="status-badge">Node Identity: Verified</div>
+        </div>
+        
+        <div class="profile-upload-zone">
+            <div class="avatar-circle" id="settings-avatar">--</div>
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="previewImage(event)">
+            <button class="btn-ghost-small" onclick="document.getElementById('imageUpload').click()">Upload Biomark</button>
+        </div>
+
+        <h3 class="section-title">> Account Identifiers</h3>
+        <div class="input-group">
+            <label>Secure Route (Email)</label>
+            <input type="email" id="editEmail" class="cyber-input">
+        </div>
+
+        <h3 class="section-title">> Economic Profile Data</h3>
+        <div id="dynamic-profile-fields" class="settings-grid">
+            </div>
+
+        <div class="settings-actions">
+            <button class="btn-secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+            <button class="btn btn-primary btn-glow" onclick="triggerSecurityCheck()">Save Calibration</button>
+        </div>
+    </div>
+
+    <div id="security-modal" class="modal-overlay" style="display: none;">
+        <div class="terminal-card glass-panel modal-content">
+            <h3 class="text-danger">> Security Override Required</h3>
+            <p>Verify encryption key to authorize database mutation.</p>
+            <input type="password" id="verifyPassword" class="cyber-input" placeholder="Enter Password">
+            <div id="security-error" class="error-msg" style="display: none;"></div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeSecurityCheck()">Abort</button>
+                <button class="btn btn-primary" onclick="executeProfileUpdate()">Authenticate</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="src/config.js"></script>
+    <script src="src/settings.js"></script>
+</body>
+</html>

@@ -10,13 +10,34 @@
 </head>
 <body class="dashboard-body">
 
-    <nav class="top-nav glass-panel">
+
+  <nav class="top-nav glass-panel">
         <div class="nav-brand">
-            <h2 class="neon-text">JALT <span class="light-text">| System Core</span></h2>
+            <h2 class="neon-text">JALT <span class="light-text" style="color: var(--text-muted); font-weight: 400;">| System Core</span></h2>
         </div>
-        <div class="nav-controls">
-            <span id="user-display" class="user-badge">Agent: Offline</span>
-            <button class="btn-disconnect" onclick="logout()">[ Sever Connection ]</button>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-item active">Dashboard</a>
+            <a href="#" class="nav-item">Simulations</a>
+            <a href="#" class="nav-item">Policy Lab</a>
+        </div>
+
+        <div class="nav-controls user-menu-container">
+            <span id="user-display" class="user-badge" style="color: #34d399;">Agent: ACTIVE</span>
+
+        <button class="user-avatar-btn" onclick="toggleUserMenu()" id="avatarBtn">
+            <div class="avatar-circle" id="nav-avatar-initials">--</div>
+            <span class="chevron">▼</span>
+        </button>
+
+            <div id="user-dropdown" class="user-dropdown glass-panel" style="display: none;">
+                    <div class="dropdown-header">
+                        <span id="dropdown-email" class="muted-text">sysadmin@jalt.io</span>
+                    </div>
+                    <hr class="cyber-divider-sm">
+                    <button class="dropdown-item" onclick="window.location.href='settings.html'">System Settings</button>
+                    <button class="dropdown-item text-danger" onclick="logout()">Sever Connection</button>
+            </div>
         </div>
     </nav>
 
@@ -92,6 +113,9 @@
         </main>
     </div>
 
-    <script src="js/dashboard.js"></script>
+
+
+    <script src="src/config.js"></script>
+    <script src="src/dashboard.js"></script>
 </body>
 </html>

@@ -1,45 +1,134 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const { protect } = require('../middleware/auth');
-
 const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User'); 
+const { protect } = require('../middleware/auth'); 
 
-const signToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET || 'super_secret_backup_key_123', {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  });
+// --- REGISTER IDENTITY ---
+router.post('/register', async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
 
-// POST /api/auth/signup
-router.post('/signup', async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const user = await User.create({ name, email, password });
-    const token = signToken(user._id);
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+        let user = await User.findOne({ email });
+        if (user) return res.status(400).json({ message: 'Identity already exists.' });
 
-// POST /api/auth/login
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email }).select('+password');
-    if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+        // Password hashing happens in UserSchema pre-save hook
+        user = new User({ name, email, password });
+        await user.save();
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        res.status(201).json({ success: true, token, user });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Registration failure.' });
     }
-    const token = signToken(user._id);
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
 });
 
-// GET /api/auth/me  (protected)
-router.get('/me', protect, (req, res) => {
-  res.json({ user: req.user });
+// --- LOGIN IDENTITY ---
+router.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        // select('+password') is required because password is select: false in schema
+        const user = await User.findOne({ email }).select('+password');
+        
+        if (!user) return res.status(401).json({ message: 'Invalid credentials.' });
+
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) return res.status(401).json({ message: 'Invalid credentials.' });
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        res.status(200).json({ success: true, token, user });
+    } catch (err) {
+        res.status(500).json({ message: 'Login failure.' });
+    }
 });
+
+// --- SECURE PROFILE UPDATE (CONFIG-AWARE) ---
+router.put('/secure-update', protect, async (req, res) => {
+    try {
+        const { password, updates } = req.body;
+        const user = await User.findById(req.user.id).select('+password');
+        
+        if (!user) return res.status(404).json({ message: 'User not found.' });
+
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) return res.status(401).json({ message: 'Invalid key. Access denied.' });
+
+        if (updates.email) user.email = updates.email;
+        if (updates.profilePicture) user.profilePicture = updates.profilePicture;
+
+        if (updates.profile) {
+            // Merge existing profile with new updates
+            user.profile = { ...user.profile, ...updates.profile };
+            // Mongoose needs this for Mixed/Object types to detect changes
+            user.markModified('profile'); 
+        }
+        
+        // If coming from onboarding, set flag to true
+        if (req.body.onboardingComplete) {
+            user.onboardingComplete = true;
+        }
+
+        await user.save();
+        res.status(200).json({ success: true, message: 'Calibration synchronized.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server core failure.' });
+    }
+});
+
+// --- GET CURRENT USER IDENTITY ---
+router.get('/me', protect, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        res.status(200).json({ success: true, user });
+    } catch (err) {
+        res.status(500).json({ message: 'Identity fetch failed.' });
+    }
+});
+
+// backend/routes/auth.js
+
+router.put('/secure-update', protect, async (req, res) => {
+    try {
+        const { password, updates, onboardingComplete } = req.body;
+        
+        // Fetch user with password for comparison
+        const user = await User.findById(req.user.id).select('+password');
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // --- THE FIX: BYPASS PASSWORD IF ONBOARDING ---
+        // Only enforce the password check if the user is ALREADY calibrated.
+        if (user.onboardingComplete) {
+            const isMatch = await user.matchPassword(password);
+            if (!isMatch) {
+                return res.status(401).json({ message: 'Invalid encryption key. Access denied.' });
+            }
+        }
+
+        // Apply dynamic profile updates from your config
+        if (updates && updates.profile) {
+            user.profile = { ...user.profile, ...updates.profile };
+            user.markModified('profile'); // Tell Mongoose the Object changed
+        }
+
+        // Set the onboarding flag to true if sent from frontend
+        if (onboardingComplete) {
+            user.onboardingComplete = true;
+        }
+
+        await user.save();
+        res.status(200).json({ success: true, message: 'Calibration synchronized.' });
+
+    } catch (err) {
+        console.error("Update Error:", err);
+        res.status(500).json({ message: 'Server core failure.' });
+    }
+});
+
 
 module.exports = router;

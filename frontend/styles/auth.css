@@ -1,9 +1,14 @@
-/* ─── GLOBAL VARIABLES ─── */
+/* =========================================================
+   JALT CORE STYLESHEET | AUTH & ONBOARDING
+   ========================================================= */
+
+/* ─── 1. GLOBAL VARIABLES & BASE ─── */
 :root {
     --bg-base: #050b14; /* Deep, pitch dark blue/black */
     --glass-bg: rgba(16, 24, 39, 0.75);
     --glass-border: rgba(14, 165, 233, 0.2);
     --neon-blue: #0ea5e9;
+    --neon-blue-bright: #38bdf8;
     --neon-purple: #8b5cf6;
     --text-main: #f8fafc;
     --text-muted: #64748b;
@@ -16,7 +21,7 @@ body.auth-body {
     overflow: hidden; position: relative;
 }
 
-/* ─── AMBIENT BACKGROUND GLOW ─── */
+/* ─── 2. AMBIENT BACKGROUND GLOW ─── */
 .ambient-light {
     position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; z-index: 0;
 }
@@ -28,19 +33,35 @@ body.auth-body {
     width: 300px; height: 300px; background: var(--neon-purple);
     bottom: -50px; right: -50px; animation: float 12s infinite alternate-reverse;
 }
-@keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
+@keyframes float { 
+    0% { transform: translateY(0px) scale(1); } 
+    100% { transform: translateY(30px) scale(1.1); } 
+}
 
-/* ─── GLASS PANEL ─── */
+/* ─── 3. SHARED COMPONENTS (PANELS & CONTAINERS) ─── */
 .glass-panel {
-    background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    background: var(--glass-bg); 
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border); border-radius: 16px;
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(14, 165, 233, 0.05);
     z-index: 10; position: relative;
 }
 
-.auth-container { width: 100%; max-width: 400px; padding: 40px; }
+/* For Login/Register Pages */
+.auth-container { 
+    width: 100%; max-width: 400px; padding: 40px; 
+}
 
-/* ─── TYPOGRAPHY ─── */
+/* For Onboarding Page */
+.onboarding-window {
+    width: 100%; max-width: 500px; padding: 40px;
+    border: 1px solid var(--neon-blue-bright);
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.2);
+    background: rgba(15, 23, 42, 0.8);
+    overflow: hidden; /* Keeps the scanner animation inside the box */
+}
+
+/* ─── 4. TYPOGRAPHY ─── */
 .brand-header { text-align: center; margin-bottom: 30px; }
 .neon-text { 
     margin: 0; font-size: 32px; font-weight: 800; letter-spacing: -1px;
@@ -50,9 +71,12 @@ body.auth-body {
 }
 .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
 
-/* ─── FORMS & INPUTS ─── */
+/* ─── 5. FORMS & INPUTS ─── */
 .input-group { margin-bottom: 20px; text-align: left; }
-.input-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+.input-group label { 
+    display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; 
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 600; 
+}
 .cyber-input {
     width: 100%; box-sizing: border-box; padding: 14px;
     background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -61,7 +85,7 @@ body.auth-body {
 }
 .cyber-input:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px rgba(14, 165, 233, 0.3); }
 
-/* ─── BUTTONS ─── */
+/* ─── 6. BUTTONS ─── */
 .btn {
     width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 15px;
     font-weight: 600; cursor: pointer; color: white; transition: all 0.2s;
@@ -72,8 +96,51 @@ body.auth-body {
 .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -10px var(--neon-blue); }
 .btn-secondary.btn-glow:hover { background: rgba(14, 165, 233, 0.1); }
 
-/* ─── UTILITIES ─── */
-.error-msg { color: #f43f5e; font-size: 13px; text-align: center; margin-top: 15px; padding: 10px; background: rgba(244, 63, 94, 0.1); border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.2); }
+/* ─── 7. AUTH SPECIFIC (LOGIN/REG) ─── */
+.error-msg { 
+    color: #f43f5e; font-size: 13px; text-align: center; margin-top: 15px; padding: 10px; 
+    background: rgba(244, 63, 94, 0.1); border-radius: 6px; border: 1px solid rgba(244, 63, 94, 0.2); 
+}
 .auth-footer { text-align: center; margin-top: 25px; font-size: 13px; color: var(--text-muted); }
 .cyber-link { color: var(--neon-blue); text-decoration: none; font-weight: 600; transition: text-shadow 0.2s; }
 .cyber-link:hover { text-shadow: 0 0 8px var(--neon-blue); }
+
+/* ─── 8. ONBOARDING SPECIFIC (CALIBRATION) ─── */
+.onboarding-header { position: relative; padding-bottom: 20px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); }
+.step-tracker { color: var(--text-muted); font-size: 0.85rem; letter-spacing: 2px; margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+
+.scanner-line {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: var(--neon-blue-bright);
+    box-shadow: 0 0 15px var(--neon-blue-bright);
+    animation: scanAnimation 3s infinite linear;
+}
+@keyframes scanAnimation { 0% { top: 0; } 100% { top: 100%; } }
+
+.onboarding-footer {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 12px; margin-top: 40px;
+}
+.onboarding-footer .btn-primary { padding: 1em; font-size: 1rem; letter-spacing: 2px; }
+
+/* The Stealth 'Previous' Button */
+.btn-prev {
+    display: none;       
+    font-size: 0.85rem; padding: 0.5em 1em; color: #64748b; 
+    background: transparent; border: none; cursor: pointer;
+    letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; font-weight: 600;
+    position: relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-prev:hover {
+    color: var(--neon-blue-bright);
+    text-shadow: 0 0 5px rgba(56, 189, 248, 0.8), 0 0 15px rgba(56, 189, 248, 0.6), 0 0 25px rgba(56, 189, 248, 0.4);
+    transform: translateY(-2px);
+}
+.btn-prev::after {
+    content: ''; position: absolute; bottom: 0; left: 50%;
+    width: 0; height: 1px; background: var(--neon-blue-bright);
+    box-shadow: 0 0 10px var(--neon-blue-bright);
+    transition: all 0.3s ease; transform: translateX(-50%);
+}
+.btn-prev:hover::after { width: 60%; }
