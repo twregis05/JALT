@@ -2,7 +2,7 @@ const API_BASE = 'http://localhost:4000/api';
 
 // Global variables to hold our Chart.js instances
 let mainChart;
-let gdpGauge, inflationGauge, unemploymentGauge;
+let gdpGauge, inflationGauge, unemploymentGauge, primeRateGauge;
 
 // --- MASTER INITIALIZATION ---
 // We only use ONE window.onload to ensure everything fires in order
@@ -26,6 +26,9 @@ window.onload = async () => {
     // 3. Initialize Visuals
     initMainChart();
     initGauges();
+
+    // 4. Load live FRED economic data into gauges
+    loadCurrentEconomicData();
 };
 
 // --- IDENTITY LOGIC ---
@@ -150,6 +153,107 @@ function initGauges() {
     unemploymentGauge = new Chart(document.getElementById('unemploymentGauge').getContext('2d'), {
         type: 'doughnut', data: { datasets: [{ data: [0, 100], backgroundColor: ['#38bdf8', 'rgba(255,255,255,0.05)'], borderWidth: 0 }] }, options: gaugeConfig
     });
+    primeRateGauge = new Chart(document.getElementById('primeRateGauge').getContext('2d'), {
+        type: 'doughnut', data: { datasets: [{ data: [0, 100], backgroundColor: ['#fbbf24', 'rgba(255,255,255,0.05)'], borderWidth: 0 }] }, options: gaugeConfig
+    });
 }
 
-// ... include your slider listeners and runSimulation code here ...
+// --- SLIDER LISTENER ---
+document.getElementById('yearsSlider').addEventListener('input', function() {
+    let val = this.value;
+    document.getElementById('yearsValDisplay').innerText = val === '1' ? '1 Year' : `${val} Years`;
+});
+
+// --- THE ML SIMULATION PIPELINE ---
+async function runSimulation() {
+    const token = localStorage.getItem('jalt_token');
+    const loader = document.getElementById('loading-indicator');
+    const btn = document.querySelector('.execute-btn');
+
+    btn.disabled = true;
+    loader.style.display = 'block';
+
+    const seriesId = document.getElementById('seriesSelect').value;
+    const years = parseInt(document.getElementById('yearsSlider').value);
+    const payload = { series_id: seriesId, years: years };
+
+    try {
+        const response = await fetch(`${API_BASE}/ml/predict`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            mainChart.data.labels = Array.from({ length: years }, (_, i) => `Year ${i + 1}`);
+            const seriesLabel = seriesId === 'UNRATE' ? 'Unemployment Rate (%)' : 'Prime Rate (%)';
+            mainChart.data.datasets[0].label = seriesLabel;
+            document.getElementById('chartLegendLabel').innerText = seriesLabel;
+            updateChart(data);
+
+            if (seriesId === 'UNRATE' && data.length > 0) {
+                const predictedUnemp = data[0];
+                unemploymentGauge.data.datasets[0].data = [predictedUnemp, Math.max(0, 15 - predictedUnemp)];
+                unemploymentGauge.update();
+                document.getElementById('unemploymentMetric').innerText = `${predictedUnemp.toFixed(1)}%`;
+            }
+        } else {
+            alert(`Simulation Error: ${data.message || 'Unknown error'}`);
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Failed to connect to backend. Is Python running?");
+    } finally {
+        btn.disabled = false;
+        loader.style.display = 'none';
+    }
+}
+
+function updateChart(newDataArray) {
+    if (Array.isArray(newDataArray)) {
+        mainChart.data.datasets[0].data = newDataArray;
+        mainChart.update();
+    }
+}
+
+// --- LIVE FRED DATA ---
+async function loadCurrentEconomicData() {
+    try {
+        const [gdpRes, inflRes, unempRes, primeRes] = await Promise.all([
+            fetch('http://localhost:4000/gdpGrowth'),
+            fetch('http://localhost:4000/inflationRate'),
+            fetch('http://localhost:4000/unemployementRate'),
+            fetch('http://localhost:4000/primeIntrestRate')
+        ]);
+        const gdpData   = await gdpRes.json();
+        const inflData  = await inflRes.json();
+        const unempData = await unempRes.json();
+        const primeData = await primeRes.json();
+
+        const gdpVal   = parseFloat(gdpData.gdpGrowth);
+        const inflVal  = parseFloat(inflData.inflationRate);
+        const unempVal = parseFloat(unempData.unemploymentRate);
+        const primeVal = parseFloat(primeData.primeInterestRate);
+
+        gdpGauge.data.datasets[0].data = [gdpVal, Math.max(0, 10 - gdpVal)];
+        gdpGauge.update();
+        inflationGauge.data.datasets[0].data = [inflVal, Math.max(0, 20 - inflVal)];
+        inflationGauge.update();
+        unemploymentGauge.data.datasets[0].data = [unempVal, Math.max(0, 15 - unempVal)];
+        unemploymentGauge.update();
+        primeRateGauge.data.datasets[0].data = [primeVal, Math.max(0, 25 - primeVal)];
+        primeRateGauge.update();
+
+        document.getElementById('gdpMetric').innerText = `+${gdpVal.toFixed(1)}%`;
+        document.getElementById('inflationMetric').innerText = `${inflVal.toFixed(1)}%`;
+        document.getElementById('unemploymentMetric').innerText = `${unempVal.toFixed(1)}%`;
+        document.getElementById('primeMetric').innerText = `${primeVal.toFixed(1)}%`;
+    } catch (err) {
+        console.warn('Could not load live economic data:', err.message);
+    }
+}

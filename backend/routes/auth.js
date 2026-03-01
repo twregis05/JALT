@@ -44,40 +44,6 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// --- SECURE PROFILE UPDATE (CONFIG-AWARE) ---
-router.put('/secure-update', protect, async (req, res) => {
-    try {
-        const { password, updates } = req.body;
-        const user = await User.findById(req.user.id).select('+password');
-        
-        if (!user) return res.status(404).json({ message: 'User not found.' });
-
-        const isMatch = await user.matchPassword(password);
-        if (!isMatch) return res.status(401).json({ message: 'Invalid key. Access denied.' });
-
-        if (updates.email) user.email = updates.email;
-        if (updates.profilePicture) user.profilePicture = updates.profilePicture;
-
-        if (updates.profile) {
-            // Merge existing profile with new updates
-            user.profile = { ...user.profile, ...updates.profile };
-            // Mongoose needs this for Mixed/Object types to detect changes
-            user.markModified('profile'); 
-        }
-        
-        // If coming from onboarding, set flag to true
-        if (req.body.onboardingComplete) {
-            user.onboardingComplete = true;
-        }
-
-        await user.save();
-        res.status(200).json({ success: true, message: 'Calibration synchronized.' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server core failure.' });
-    }
-});
-
 // --- GET CURRENT USER IDENTITY ---
 router.get('/me', protect, async (req, res) => {
     try {

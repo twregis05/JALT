@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mongosh --eval \"db.runCommand\\({ connectionStatus: 1 }\\)\" --quiet)",
+      "Bash(ls -la \"C:\\\\Users\\\\boomc\\\\Documents\\\\VsCodeProjects\\\\jalt\\\\JALT\\\\backend\\\\routes\"\" 2>/dev/null || echo \"Routes directory check failed \")",
+      "Bash(test -f '/c/Users/boomc/Documents/VsCodeProjects/jalt/JALT/backend/.env')"
+    ]
+  }
+}
