@@ -25,6 +25,9 @@ app.set('views', path.join(__dirname, '../frontend/templates'));
 // static files (css, images, etc.)
 app.use(express.static(path.join(__dirname, '../frontend')));
 
+// ── Root redirect ─────────────────────────────
+app.get('/', (req, res) => res.redirect('/login.html'));
+
 // ── Routes ────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 // app.use('/api/ml', require('./routes/ml')); // Uncomment this later when we build the ML route!
