@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JALT | System Calibration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/auth.css">
+</head>
+<body class="auth-body">
+
+    <div class="ambient-light blue-glow"></div>
+    
+    <div class="terminal-card onboarding-window glass-panel">
+        <div class="onboarding-header">
+            <div class="status-scanner">
+                <span class="scanner-line"></span>
+            </div>
+            <div class="scanner-text-group">
+                <h2 class="neon-text" style="margin:0; font-size: 1.5rem;">System Calibration</h2>
+                <div class="step-tracker">PHASE <span id="current-step">1</span> / <span id="total-steps">3</span></div>
+            </div>
+        </div>
+        
+        <div id="onboarding-steps-container" class="step-viewport" style="min-height: 150px; margin: 20px 0;">
+            </div>
+
+        <div class="onboarding-footer">
+            <button id="onboarding-back" class="btn-prev">PREV</button>
+            <button id="onboarding-next" class="btn btn-primary btn-glow">PROCEED</button>
+        </div>
+        
+        <div id="onboarding-error" class="error-msg" style="display: none; margin-top: 15px;"></div>
+    </div>
+
+    <script src="src/config.js"></script>
+    <script src="src/onboarding.js"></script>
+</body>
+</html>

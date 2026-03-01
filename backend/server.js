@@ -34,8 +34,6 @@ app.use("/api/ml", ml);
 
 // ── Health check ──────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
-/// ── Health check ──────────────────────────────
-app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
 
 // ── Health check ──────────────────────────────
