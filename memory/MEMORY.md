@@ -1,7 +1,7 @@
 # JALT Project Memory
 
 ## Stack
-- **Frontend**: React 18, react-router-dom v6, axios — `frontend/`
+- **Frontend**: Plain HTML5 / vanilla JS / CSS — `frontend/`
 - **Backend**: Node.js, Express 4, Mongoose 8, JWT, bcryptjs — `backend/`
 - **ML Service**: Python 3, Flask 3, pandas, numpy, scikit-learn, matplotlib, seaborn, PyTorch — `ml_service/`
 - **Database**: MongoDB via Mongoose
@@ -20,15 +20,18 @@ JALT/
 │       ├── auth.js     # /signup, /login, /me
 │       └── ml.js       # /predict — proxies to Flask
 ├── frontend/
-│   ├── public/index.html
-│   └── src/
-│       ├── index.js
-│       ├── App.js      # BrowserRouter + PrivateRoute
-│       └── pages/
-│           ├── Login.jsx
-│           ├── Signup.jsx
-│           ├── Dashboard.jsx
-│           └── Account.jsx
+│   ├── login.html
+│   ├── signup.html
+│   ├── dashboard.html
+│   ├── account.html
+│   ├── css/styles.css
+│   └── js/
+│       ├── api.js          # shared fetch helper + JWT header injection
+│       ├── auth.js         # route guard (redirect to login if no token)
+│       ├── login.js
+│       ├── signup.js
+│       ├── dashboard.js
+│       └── account.js
 └── ml_service/
     ├── app.py          # Flask entry; registers predictions_bp
     ├── requirements.txt
@@ -39,7 +42,7 @@ JALT/
 ```
 
 ## Ports
-- Frontend (React dev): 3000
+- Frontend (static): served by Express or any static server
 - Backend (Express): 5000
 - ML Service (Flask): 8000
 
@@ -47,21 +50,22 @@ JALT/
 - `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `ML_SERVICE_URL` (backend)
 - `FLASK_PORT`, `ALLOWED_ORIGINS` (ml_service)
 
-## Pages (React)
-Login, Signup, Dashboard (private), Account (private). All skeleton only — not yet implemented.
+## Pages (plain HTML)
+login.html, signup.html, dashboard.html (guarded), account.html (guarded).
+All skeleton only — not yet implemented. dashboard/account load js/auth.js first to redirect if no token.
 
 ## Setup Commands
 ```bash
 # Backend
 cd backend && npm install && npm run dev
 
-# Frontend
-cd frontend && npm install && npm start
+# Frontend — open HTML files directly or serve via Express static middleware
+# (no build step needed)
 
 # ML service
 cd ml_service
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 python app.py
 ```

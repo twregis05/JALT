@@ -16,10 +16,9 @@ package-lock.json
 yarn.lock
 
 # ─────────────────────────────────────────────
-#  React build output
+#  Frontend (plain HTML/JS/CSS — no build step)
 # ─────────────────────────────────────────────
-frontend/build/
-frontend/.env
+# No build output to ignore for static HTML
 
 # ─────────────────────────────────────────────
 #  Python
@@ -36,10 +35,11 @@ build/
 .eggs/
 *.egg
 
+backend/node_modules/
+
 # ─────────────────────────────────────────────
 #  ML artifacts
 # ─────────────────────────────────────────────
-*.pkl
 *.pickle
 *.joblib
 *.pth
@@ -80,3 +80,4 @@ logs/
 #  MongoDB local data
 # ─────────────────────────────────────────────
 data/db/
+
