@@ -26,32 +26,19 @@
             <h3 class="panel-title">Policy Matrices</h3>
             
             <div class="control-group">
-                <label>Corporate Tax Delta <span class="val-display" id="taxValDisplay">0%</span></label>
-                <input type="range" id="corpTaxSlider" class="cyber-slider" min="-10" max="10" step="0.5" value="0">
+                <label>Series to Forecast</label>
+                <select id="seriesSelect" style="width:100%;background:rgba(2,6,23,0.8);color:#f1f5f9;border:1px solid rgba(56,189,248,0.3);padding:8px 12px;border-radius:6px;font-family:inherit;font-size:0.85rem;cursor:pointer;margin-top:6px;">
+                    <option value="UNRATE">Unemployment Rate (UNRATE)</option>
+                    <option value="DPRIME">Prime Rate (DPRIME)</option>
+                </select>
             </div>
 
             <div class="control-group">
-                <label>Interest Rate Adj. <span class="val-display" id="rateValDisplay">0 bps</span></label>
-                <input type="range" id="interestRateSlider" class="cyber-slider" min="-200" max="200" step="25" value="0">
+                <label>Forecast Horizon <span class="val-display" id="yearsValDisplay">5 Years</span></label>
+                <input type="range" id="yearsSlider" class="cyber-slider" min="1" max="5" step="1" value="5">
             </div>
 
             <hr class="cyber-divider">
-
-            <div class="toggle-group">
-                <label>Quantitative Easing</label>
-                <label class="cyber-switch">
-                    <input type="checkbox" id="qeToggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
-
-            <div class="toggle-group">
-                <label>Universal Basic Income</label>
-                <label class="cyber-switch">
-                    <input type="checkbox" id="ubiToggle">
-                    <span class="slider round"></span>
-                </label>
-            </div>
 
             <button class="btn btn-primary btn-glow execute-btn" onclick="runSimulation()">Compile Simulation</button>
             <div id="loading-indicator" class="loader" style="display: none;">Awaiting Python Node...</div>
@@ -81,7 +68,7 @@
                 <div class="chart-header">
                     <h4>5-Year Predictive Trajectory</h4>
                     <div class="chart-legend">
-                        <span class="legend-item"><span class="dot gdp-dot"></span> GDP</span>
+                        <span class="legend-item"><span class="dot gdp-dot"></span> <span id="chartLegendLabel">Forecast</span></span>
                     </div>
                 </div>
                 <div class="chart-container">

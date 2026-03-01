@@ -20,6 +20,9 @@ window.onload = () => {
     // 3. Draw the blank charts
     initMainChart();
     initGauges();
+
+    // 4. Load real economic data into the gauges on page load
+    loadCurrentEconomicData();
 };
 
 function logout() {
@@ -28,15 +31,10 @@ function logout() {
 }
 
 // --- UI INTERACTIONS ---
-// This makes the text next to the slider update in real-time as you drag it
-document.getElementById('corpTaxSlider').addEventListener('input', function() {
+// Updates the years label as the slider moves
+document.getElementById('yearsSlider').addEventListener('input', function() {
     let val = this.value;
-    document.getElementById('taxValDisplay').innerText = val > 0 ? `+${val}%` : `${val}%`;
-});
-
-document.getElementById('interestRateSlider').addEventListener('input', function() {
-    let val = this.value;
-    document.getElementById('rateValDisplay').innerText = val > 0 ? `+${val} bps` : `${val} bps`;
+    document.getElementById('yearsValDisplay').innerText = val === '1' ? '1 Year' : `${val} Years`;
 });
 
 
@@ -45,36 +43,46 @@ async function runSimulation() {
     const token = localStorage.getItem('jalt_token');
     const loader = document.getElementById('loading-indicator');
     const btn = document.querySelector('.execute-btn');
-    
+
     // UI Feedback: Disable button, show loader
     btn.disabled = true;
     loader.style.display = 'block';
 
-    // Grab all the data from our new dashboard inputs
-    const payload = {
-        corp_tax_change: parseFloat(document.getElementById('corpTaxSlider').value),
-        interest_rate_adj: parseFloat(document.getElementById('interestRateSlider').value),
-        qe_active: document.getElementById('qeToggle').checked,
-        ubi_active: document.getElementById('ubiToggle').checked
-    };
+    const seriesId = document.getElementById('seriesSelect').value;
+    const years = parseInt(document.getElementById('yearsSlider').value);
+
+    const payload = { series_id: seriesId, years: years };
 
     try {
         const response = await fetch(`${API_BASE}/ml/predict`, {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` 
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(payload)
         });
 
         const data = await response.json();
-        
+
         if (response.ok) {
-            // Because our Python backend currently only returns a flat array of GDP, 
-            // we will feed that into the main chart, and mock the gauges for now.
-            updateChart(data); // data is expected to be an array like [2.1, 2.0, 1.9...]
-            mockUpdateGauges(); 
+            // Update chart x-axis labels to match the selected horizon
+            mainChart.data.labels = Array.from({ length: years }, (_, i) => `Year ${i + 1}`);
+
+            // Update chart dataset label and legend to match selected series
+            const seriesLabel = seriesId === 'UNRATE' ? 'Unemployment Rate (%)' : 'Prime Rate (%)';
+            mainChart.data.datasets[0].label = seriesLabel;
+            document.getElementById('chartLegendLabel').innerText = seriesLabel;
+
+            updateChart(data);
+
+            // Reflect year 1 prediction in the unemployment gauge when forecasting UNRATE
+            if (seriesId === 'UNRATE' && data.length > 0) {
+                const predictedUnemp = data[0];
+                unemploymentGauge.data.datasets[0].data = [predictedUnemp, Math.max(0, 15 - predictedUnemp)];
+                unemploymentGauge.update();
+                document.getElementById('unemploymentMetric').innerText = `${predictedUnemp.toFixed(1)}%`;
+            }
         } else {
             alert(`Simulation Error: ${data.message || 'Unknown error'}`);
         }
@@ -103,7 +111,7 @@ function initMainChart() {
         data: {
             labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
             datasets: [{
-                label: 'GDP Vector',
+                label: 'Forecast',
                 data: [0, 0, 0, 0, 0],
                 borderColor: '#38bdf8',
                 backgroundColor: gradient,
@@ -150,6 +158,36 @@ function updateChart(newDataArray) {
     if (Array.isArray(newDataArray)) {
         mainChart.data.datasets[0].data = newDataArray;
         mainChart.update();
+    }
+}
+
+async function loadCurrentEconomicData() {
+    try {
+        const [gdpRes, inflRes, unempRes] = await Promise.all([
+            fetch('http://localhost:4000/gdpGrowth'),
+            fetch('http://localhost:4000/inflationRate'),
+            fetch('http://localhost:4000/unemployementRate')
+        ]);
+        const gdpData   = await gdpRes.json();
+        const inflData  = await inflRes.json();
+        const unempData = await unempRes.json();
+
+        const gdpVal   = parseFloat(gdpData.gdpGrowth);
+        const inflVal  = parseFloat(inflData.inflationRate);
+        const unempVal = parseFloat(unempData.unemploymentRate);
+
+        gdpGauge.data.datasets[0].data = [gdpVal, Math.max(0, 10 - gdpVal)];
+        gdpGauge.update();
+        inflationGauge.data.datasets[0].data = [inflVal, Math.max(0, 20 - inflVal)];
+        inflationGauge.update();
+        unemploymentGauge.data.datasets[0].data = [unempVal, Math.max(0, 15 - unempVal)];
+        unemploymentGauge.update();
+
+        document.getElementById('gdpMetric').innerText = `+${gdpVal.toFixed(1)}%`;
+        document.getElementById('inflationMetric').innerText = `${inflVal.toFixed(1)}%`;
+        document.getElementById('unemploymentMetric').innerText = `${unempVal.toFixed(1)}%`;
+    } catch (err) {
+        console.warn('Could not load live economic data:', err.message);
     }
 }
 
