@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JALT | Create Node</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/auth.css">
+</head>
+<body class="auth-body">
+
+    <div class="ambient-light blue-glow"></div>
+    <div class="ambient-light purple-glow"></div>
+
+    <div class="auth-container glass-panel">
+        <div class="brand-header">
+            <h1 class="neon-text">Create Authorization</h1>
+            <p class="subtitle">Register a new identity in the database.</p>
+        </div>
+        
+        <form id="registerForm" onsubmit="event.preventDefault(); handleSignup();">
+            <div class="input-group">
+                <label for="regName">Alias (Name)</label>
+                <input type="text" id="regName" class="cyber-input" placeholder="e.g. Satoshi" required>
+            </div>
+
+            <div class="input-group">
+                <label for="regEmail">Secure Route (Email)</label>
+                <input type="email" id="regEmail" class="cyber-input" placeholder="user@network.com" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="regPassword">Encryption Key (Password)</label>
+                <input type="password" id="regPassword" class="cyber-input" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-secondary btn-glow">Register Identity</button>
+        </form>
+
+        <div id="auth-error" class="error-msg" style="display: none;"></div>
+
+        <div class="auth-footer">
+            <p>Connection already established? <a href="login.html" class="cyber-link">Return to Login.</a></p>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+</body>
+</html>

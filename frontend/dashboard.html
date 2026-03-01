@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JALT | Macro Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body class="dashboard-body">
+
+    <nav class="top-nav glass-panel">
+        <div class="nav-brand">
+            <h2 class="neon-text">JALT <span class="light-text">| System Core</span></h2>
+        </div>
+        <div class="nav-controls">
+            <span id="user-display" class="user-badge">Agent: Offline</span>
+            <button class="btn-disconnect" onclick="logout()">[ Sever Connection ]</button>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar glass-panel">
+            <h3 class="panel-title">Policy Matrices</h3>
+            
+            <div class="control-group">
+                <label>Corporate Tax Delta <span class="val-display" id="taxValDisplay">0%</span></label>
+                <input type="range" id="corpTaxSlider" class="cyber-slider" min="-10" max="10" step="0.5" value="0">
+            </div>
+
+            <div class="control-group">
+                <label>Interest Rate Adj. <span class="val-display" id="rateValDisplay">0 bps</span></label>
+                <input type="range" id="interestRateSlider" class="cyber-slider" min="-200" max="200" step="25" value="0">
+            </div>
+
+            <hr class="cyber-divider">
+
+            <div class="toggle-group">
+                <label>Quantitative Easing</label>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="qeToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div class="toggle-group">
+                <label>Universal Basic Income</label>
+                <label class="cyber-switch">
+                    <input type="checkbox" id="ubiToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <button class="btn btn-primary btn-glow execute-btn" onclick="runSimulation()">Compile Simulation</button>
+            <div id="loading-indicator" class="loader" style="display: none;">Awaiting Python Node...</div>
+        </aside>
+
+        <main class="main-content">
+            
+            <div class="kpi-grid">
+                <div class="glass-panel kpi-card">
+                    <h4>GDP Vector</h4>
+                    <div class="gauge-container"><canvas id="gdpGauge"></canvas></div>
+                    <h2 id="gdpMetric" class="neon-data">+0.0%</h2>
+                </div>
+                <div class="glass-panel kpi-card">
+                    <h4>CPI (Inflation)</h4>
+                    <div class="gauge-container"><canvas id="inflationGauge"></canvas></div>
+                    <h2 id="inflationMetric" class="neon-data">0.0%</h2>
+                </div>
+                <div class="glass-panel kpi-card">
+                    <h4>Unemployment</h4>
+                    <div class="gauge-container"><canvas id="unemploymentGauge"></canvas></div>
+                    <h2 id="unemploymentMetric" class="neon-data">0.0%</h2>
+                </div>
+            </div>
+
+            <div class="glass-panel main-chart-panel">
+                <div class="chart-header">
+                    <h4>5-Year Predictive Trajectory</h4>
+                    <div class="chart-legend">
+                        <span class="legend-item"><span class="dot gdp-dot"></span> GDP</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

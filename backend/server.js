@@ -1,15 +1,20 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const path = require('path');          
 const connectDB = require('./config/db');
 
 const app = express();
 
-// ── Connect to MongoDB ────────────────────────
-connectDB();
+// ── Connect to MongoDB Atlas ────────────────────────
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ MongoDB Atlas connected live to the cloud!'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // ── Middleware ────────────────────────────────
+app.use(cors()); 
+app.use(express.json()); 
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
 app.use(express.json());
 
@@ -23,10 +28,14 @@ app.set('views', path.join(__dirname, '../frontend/templates'));
 app.use(express.static(path.join(__dirname, '../frontend/style')));
 
 // ── Routes ────────────────────────────────────
+app.use('/api/auth', require('./routes/auth'));
+// app.use('/api/ml', require('./routes/ml')); // Uncomment this later when we build the ML route!
 const ml = require("./routes/ml");
 
 app.use("/ml", ml);
 
+// ── Health check ──────────────────────────────
+app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 /// ── Health check ──────────────────────────────
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
@@ -97,5 +106,7 @@ app.get('/gdpGrowth', async (req, res) => {
 
 
 // ── Start ─────────────────────────────────────
+const PORT = 4000; 
+app.listen(PORT, () => console.log(`🚀 Backend running on port ${PORT}`));
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Web server is running at http://localhost:${PORT}`));
