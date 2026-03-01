@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/.env' });
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -13,9 +13,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch((err) => console.error('❌ MongoDB connection error:', err));
 
 // ── Middleware ────────────────────────────────
-app.use(cors()); 
-app.use(express.json()); 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000' }));
+app.use(cors());
 app.use(express.json());
 
 // ── View engine ───────────────────────────────
@@ -25,14 +23,14 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../frontend/templates'));
 
 // static files (css, images, etc.)
-app.use(express.static(path.join(__dirname, '../frontend/style')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // ── Routes ────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 // app.use('/api/ml', require('./routes/ml')); // Uncomment this later when we build the ML route!
 const ml = require("./routes/ml");
 
-app.use("/ml", ml);
+app.use("/api/ml", ml);
 
 // ── Health check ──────────────────────────────
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
@@ -108,5 +106,3 @@ app.get('/gdpGrowth', async (req, res) => {
 // ── Start ─────────────────────────────────────
 const PORT = 4000; 
 app.listen(PORT, () => console.log(`🚀 Backend running on port ${PORT}`));
-const PORT = process.env.PORT;
-app.listen(PORT, () => console.log(`Web server is running at http://localhost:${PORT}`));
