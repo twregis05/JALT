@@ -1,6 +1,6 @@
 // Shared API helper — imported first on every page
 // TODO: configure base URL from env or a config constant
-const API_BASE = 'http://localhost:4000/api';
+const API_BASE = '/api';
 
 async function apiFetch(path, options = {}) {
   const token = localStorage.getItem('token');

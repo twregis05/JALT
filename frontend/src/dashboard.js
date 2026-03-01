@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:4000/api';
+const API_BASE = '/api';
 
 // Global variables to hold our Chart.js instances
 let mainChart;
@@ -225,10 +225,10 @@ function updateChart(newDataArray) {
 async function loadCurrentEconomicData() {
     try {
         const [gdpRes, inflRes, unempRes, primeRes] = await Promise.all([
-            fetch('http://localhost:4000/gdpGrowth'),
-            fetch('http://localhost:4000/inflationRate'),
-            fetch('http://localhost:4000/unemployementRate'),
-            fetch('http://localhost:4000/primeIntrestRate')
+            fetch('/gdpGrowth'),
+            fetch('/inflationRate'),
+            fetch('/unemployementRate'),
+            fetch('/primeIntrestRate')
         ]);
         const gdpData   = await gdpRes.json();
         const inflData  = await inflRes.json();

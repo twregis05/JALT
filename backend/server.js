@@ -102,5 +102,5 @@ app.get('/gdpGrowth', async (req, res) => {
 
 
 // ── Start ─────────────────────────────────────
-const PORT = 4000; 
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend running on port ${PORT}`));
